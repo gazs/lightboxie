@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
     <title>lightboxie</title>
 		<link rel="stylesheet" href="https://unpkg.com/tachyons@4.5.3/css/tachyons.min.css"/>
-		<script src="http://underscorejs.org/underscore-min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="underscore-min.js" type="text/javascript" charset="utf-8"></script>
 		
 <style>
 * {
@@ -43,14 +43,12 @@
 			let above = Array.from(img.parentElement.children).filter(element => element.getBoundingClientRect().bottom < imageBB.top);
 			let below = Array.from(img.parentElement.children).filter(element => element.getBoundingClientRect().top > imageBB.bottom);
 
-			// p above // TODO: *everything* above etc
 			above.forEach(element => {
 				let pBottom = element.getBoundingClientRect().bottom;
 				element.style.transform = `translateY(-${pBottom}px)`
 				transformed.push(element);
 			});
 
-			// p below
 			below.forEach(element => {
 				let p2top= element.getBoundingClientRect().top;
 				element.style.transform = `translateY(${windowHeight - p2top}px)`
@@ -66,7 +64,6 @@
 
 		}
 
-		
 		function handleOrientation (event) {
 			const alpha = event.alpha; // lean left / right
 			if (alpha < 0) {
