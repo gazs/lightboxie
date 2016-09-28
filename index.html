@@ -1,0 +1,99 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>lightboxie</title>
+		<link rel="stylesheet" href="https://unpkg.com/tachyons@4.5.3/css/tachyons.min.css"/>
+		<script src="http://underscorejs.org/underscore-min.js" type="text/javascript" charset="utf-8"></script>
+		
+<style>
+* {
+	transition: 0.2s all;
+}
+</style>
+
+</head>
+<body>
+	<article>
+	<p class="lh-copy">Yes, Kristin Cavallari co-hosted an E! TV show about fashion trends called The Fabulist. It premiered on St. Patrick’s Day in 2014, and it was canceled in May, after eight episodes. Kristin didn’t even show up for the last two shows, according to TV Guide’s records. (She gave birth to her second child, Jaxon Wyatt Cutler, on May 7.)</p>
+	<img class="lightbox" src="http://images.gawker.com/fi9qvqs5nqt3biw57vbs/c_scale,fl_progressive,q_80,w_800.jpg">
+	<p class="lh-copy">The name of the show was never fully explained in promotional materials; as far as I can tell, E! execs just thought it sounded fun. Judging by YouTube clips of The Fabulist that still live online, however, the show itself was not. Here, for example, is a deeply confusing segment from the fifth episode in which Kristin, her co-host Orly Shani, chef Rocco DiSpirito, and a pained-looking Chrissy Teigen discuss the Sriracha “trend.” All agree, zombie-like, that Sriracha is “the little black dress of condiments” and “the Tom Ford of hot sauce.” Shani then reveals that Sriracha makes her husband’s “ass explode.”</p>
+	</article>
+	<script>
+		let img = document.querySelector('img.lightbox')
+
+		let isFullscreen = false;
+		img.addEventListener('click', () => isFullscreen ? exitFullscreen() : enterFullscreen())
+
+		let transformed = [];
+		function enterFullscreen() {
+			isFullscreen = true;
+
+			let windowHeight = window.innerHeight;
+			let imageBB = img.getBoundingClientRect();
+
+			// center image
+			img.style.transform = `scale(${windowHeight / imageBB.height})`
+			img.style.transformOrigin = `50% ${img.offsetTop - img.height/2}px`
+
+			transformed.push(img);
+
+
+			let above = Array.from(img.parentElement.children).filter(element => element.getBoundingClientRect().bottom < imageBB.top);
+			let below = Array.from(img.parentElement.children).filter(element => element.getBoundingClientRect().top > imageBB.bottom);
+
+			// p above // TODO: *everything* above etc
+			above.forEach(element => {
+				let pBottom = element.getBoundingClientRect().bottom;
+				element.style.transform = `translateY(-${pBottom}px)`
+				transformed.push(element);
+			});
+
+			// p below
+			below.forEach(element => {
+				let p2top= element.getBoundingClientRect().top;
+				element.style.transform = `translateY(${windowHeight - p2top}px)`
+				transformed.push(element);
+			});
+
+			// listen to tilt
+			window.addEventListener('deviceorientation', _.debounce(handleOrientation, 200));
+
+			// add event listeners to cancel fullscreen on scroll, keyup
+			window.addEventListener('keyup', exitFullscreen, {once:true, passive: true})
+			window.addEventListener('scroll', exitFullscreen, {once:true, passive: true})
+
+		}
+
+		
+		function handleOrientation (event) {
+			const alpha = event.alpha; // lean left / right
+			if (alpha < 0) {
+				console.log('left');
+				img.style.transformOrigin = "0% 123.5px 0px"
+			}
+			else if (alpha > 0) {
+				console.log('right');
+				img.style.transformOrigin = "100% 123.5px 0px"
+			}
+//			else {
+//				img.style.transformOrigin = `${alpha/90*img.width}px 123.5px 0px`
+//			}
+		}
+
+		function exitFullscreen() {
+			// p above
+			transformed.forEach(element => {
+				element.style.transform = ``
+				element.style.transformOrigin = ``
+			});
+			transformed = [];
+
+				
+			isFullscreen = false;
+		}
+		
+	</script>
+</body>
+</html>
