@@ -22,6 +22,9 @@
 	<img class="lightbox" src="http://images.gawker.com/fi9qvqs5nqt3biw57vbs/c_scale,fl_progressive,q_80,w_800.jpg">
 	</article>
 	<script>
+		clamp = function(number, min, max) {
+			return Math.max(min, Math.min(number, max));
+		}
 
 		let isFullscreen = false;
 		var orientationHandler;
@@ -40,7 +43,7 @@
 			let imageBB = img.getBoundingClientRect();
 
 			// center image
-			img.style.transition = `0.2s all`;
+			img.style.transition = `0.1s all ease-in-out`;
 
 			let scale = windowHeight / imageBB.height;
 			let scaledImageHeight = scale * imageBB.height;
@@ -74,7 +77,10 @@
 			// listen to tilt
 			function handleOrientation (event) {
 				const gamma = event.gamma; // lean left / right
-				img.style.transformOrigin = `${100 - ((gamma+90) / 180 * 100)}% 50% 0px`
+
+				const angle = 5;
+				
+				img.style.transformOrigin = `${((clamp(gamma, -1* angle, angle)+angle) / (2*angle) * 100)}% 50% 0px`
 			}
 			orientationHandler = window.addEventListener('deviceorientation', _.throttle(handleOrientation, 100));
 
