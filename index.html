@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
     <title>lightboxie</title>
 		<link rel="stylesheet" href="https://unpkg.com/tachyons@4.5.3/css/tachyons.min.css"/>
-		<script src="underscore-min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="https://unpkg.com/underscore@1.8.3/underscore-min.js" type="text/javascript" charset="utf-8"></script>
 		
 		
 </head>
@@ -73,9 +73,8 @@
 
 			// listen to tilt
 			function handleOrientation (event) {
-				console.log("sthing");
 				const gamma = event.gamma; // lean left / right
-				img.style.transformOrigin = `${(gamma+90) / 180 * 100}% 50% 0px`
+				img.style.transformOrigin = `${100 - ((gamma+90) / 180 * 100)}% 50% 0px`
 			}
 			orientationHandler = window.addEventListener('deviceorientation', _.throttle(handleOrientation, 100));
 
