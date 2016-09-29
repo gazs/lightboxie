@@ -33,6 +33,7 @@
 
 		let transformed = [];
 		function enterFullscreen(img) {
+			if (window.matchMedia('(orientation: portrait)').matches) {
 			isFullscreen = true;
 
 			let windowHeight = window.screen.availHeight;
@@ -47,7 +48,6 @@
 			let pushedTop = (scaledImageHeight / 2 ) - (imageBB.height/2);
 			let translateY = ((imageBB.top - pushedTop) * -1 / scale);
 
-			console.log( scale, translateY);
 			img.style.transform = `scale(${scale}) translateY(${translateY}px)`;
 
 			transformed.push(img);
@@ -73,16 +73,18 @@
 
 			// listen to tilt
 			function handleOrientation (event) {
+				console.log("sthing");
 				const gamma = event.gamma; // lean left / right
 				img.style.transformOrigin = `${(gamma+90) / 180 * 100}% 50% 0px`
 			}
-			orientationHandler = window.addEventListener('deviceorientation', _.debounce(handleOrientation, 100));
+			orientationHandler = window.addEventListener('deviceorientation', _.throttle(handleOrientation, 100));
 
 			// add event listeners to cancel fullscreen on scroll, keyup
 			window.addEventListener('keyup', exitFullscreen, {once:true, passive: true})
 			window.addEventListener('scroll', exitFullscreen, {once:true, passive: true})
 			window.addEventListener('click', exitFullscreen, true);
 
+			}
 		}
 
 
