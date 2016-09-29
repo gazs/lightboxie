@@ -42,8 +42,17 @@
 			let windowHeight = window.screen.availHeight;
 			let imageBB = img.getBoundingClientRect();
 
+			// TODO filter only visible elements
+
+			let above = Array.from(img.parentElement.children).map(
+					element => [element, element.getBoundingClientRect()]
+					).filter(([element, bbox]) => bbox.bottom < imageBB.top)
+
+			let below = Array.from(img.parentElement.children).map(
+					element => [element, element.getBoundingClientRect()]
+					).filter(([element, bbox]) => bbox.top > imageBB.bottom)
+
 			// center image
-			img.style.transition = `0.2s transform ease-in-out, 0.5s transform-origin`;
 
 			let scale = windowHeight / imageBB.height;
 			let scaledImageHeight = scale * imageBB.height;
@@ -51,24 +60,20 @@
 			let pushedTop = (scaledImageHeight / 2 ) - (imageBB.height/2);
 			let translateY = ((imageBB.top - pushedTop) * -1 / scale);
 
+			img.style.transition = `0.2s transform ease-in-out, 0.5s transform-origin ease-in-out`;
 			img.style.transform = `scale(${scale}) translateY(${translateY}px)`;
 
 			transformed.push(img);
 
-
-			// TODO filter only visible elements
-			let above = Array.from(img.parentElement.children).filter(element => element.getBoundingClientRect().bottom < imageBB.top);
-			let below = Array.from(img.parentElement.children).filter(element => element.getBoundingClientRect().top > imageBB.bottom);
-
-			above.forEach(element => {
-				let pBottom = element.getBoundingClientRect().bottom;
+			above.forEach(([element, bbox]) => {
+				let pBottom = bbox.bottom;
 				element.style.transition = `0.2s all`;
 				element.style.transform = `translateY(-${pBottom}px)`
 				transformed.push(element);
 			});
 
-			below.forEach(element => {
-				let p2top= element.getBoundingClientRect().top;
+			below.forEach(([element, bbox]) => {
+				let p2top= bbox.top;
 				element.style.transition = `0.2s all`;
 				element.style.transform = `translateY(${windowHeight - p2top}px)`
 				transformed.push(element);
@@ -85,17 +90,18 @@
 			orientationHandler = window.addEventListener('deviceorientation', _.throttle(handleOrientation, 100));
 
 			// add event listeners to cancel fullscreen on scroll, keyup
-			window.addEventListener('keyup', exitFullscreen, {once:true, passive: true})
-			window.addEventListener('scroll', exitFullscreen, {once:true, passive: true})
+			window.addEventListener('keyup', exitFullscreen, {once:true})
+			window.addEventListener('scroll', exitFullscreen, {once:true})
 			window.addEventListener('click', exitFullscreen, true);
 
 			}
 		}
 
 
-		function exitFullscreen() {
+		function exitFullscreen(event) {
+			event.preventDefault();
+
 			window.removeEventListener('deviceorientation', orientationHandler);
-			// p above
 			transformed.forEach(element => {
 				element.style.transform = ``
 				element.style.transformOrigin = ``
