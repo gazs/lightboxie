@@ -22,8 +22,12 @@
 	<img class="lightbox" src="http://images.gawker.com/fi9qvqs5nqt3biw57vbs/c_scale,fl_progressive,q_80,w_800.jpg">
 	</article>
 	<script>
-		clamp = function(number, min, max) {
+		function clamp(number, min, max) {
 			return Math.max(min, Math.min(number, max));
+		}
+
+		function removeHint() {
+			this.style.willChange = 'auto';
 		}
 
 		let isFullscreen = false;
@@ -60,6 +64,8 @@
 			let pushedTop = (scaledImageHeight / 2 ) - (imageBB.height/2);
 			let translateY = ((imageBB.top - pushedTop) * -1 / scale);
 
+			img.style.willChange = `transform`
+			img.addEventListener('animationEnd', removeHint);
 			img.style.transition = `0.2s transform ease-in-out, 0.5s transform-origin ease-in-out`;
 			img.style.transform = `scale(${scale}) translateY(${translateY}px)`;
 
@@ -68,6 +74,8 @@
 			above.forEach(([element, bbox]) => {
 				let pBottom = bbox.bottom;
 				element.style.transition = `0.2s all`;
+				element.style.willChange = `transform`
+				element.addEventListener('animationEnd', removeHint);
 				element.style.transform = `translateY(-${pBottom}px)`
 				transformed.push(element);
 			});
@@ -75,6 +83,8 @@
 			below.forEach(([element, bbox]) => {
 				let p2top= bbox.top;
 				element.style.transition = `0.2s all`;
+				element.style.willChange = `transform`
+				element.addEventListener('animationEnd', removeHint);
 				element.style.transform = `translateY(${windowHeight - p2top}px)`
 				transformed.push(element);
 			});
