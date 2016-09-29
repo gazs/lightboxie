@@ -43,7 +43,7 @@
 			let imageBB = img.getBoundingClientRect();
 
 			// center image
-			img.style.transition = `0.1s all ease-in-out`;
+			img.style.transition = `0.1s transform ease-in-out, 1s transform-origin`;
 
 			let scale = windowHeight / imageBB.height;
 			let scaledImageHeight = scale * imageBB.height;
