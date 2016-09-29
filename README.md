@@ -11,4 +11,5 @@ things to do:
   everything
 - add helper functions to initialize script (eg only certain images, or
   all images on load, etc)
+- load higher res version of image when (while?) zoomed in
 - integrate it with our normal lightbox lib
