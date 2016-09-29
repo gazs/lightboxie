@@ -19,23 +19,24 @@
 	<script>
 
 		let isFullscreen = false;
+		var orientationHandler;
 
-		let lightboxables = document.querySelectorAll('.lightbox');
+		let lightboxables = document.querySelectorAll('img.lightbox');
 		Array.from(lightboxables).forEach(element=> {
-			element.addEventListener('click', () => isFullscreen ? exitFullscreen() : enterFullscreen(element))
+			element.addEventListener('click', () => enterFullscreen(element))
 		});
 
 		let transformed = [];
 		function enterFullscreen(img) {
 			isFullscreen = true;
 
-			let windowHeight = window.innerHeight;
+			let windowHeight = window.screen.availHeight;
 			let imageBB = img.getBoundingClientRect();
 
 			// center image
 			img.style.transition = `0.2s all`;
 			img.style.transform = `scale(${windowHeight / imageBB.height})`;
-			img.style.transformOrigin = `50% ${img.offsetTop - img.height/2}px`;
+			img.style.transformOrigin = `50% ${img.offsetTop + img.height/2}px`;
 
 			transformed.push(img);
 
@@ -58,30 +59,22 @@
 			});
 
 			// listen to tilt
-			window.addEventListener('deviceorientation', _.debounce(handleOrientation, 200));
+			function handleOrientation (event) {
+				const gamma = event.gamma; // lean left / right
+				img.style.transformOrigin = `${(gamma+90) / 180 * 100}% 123.5px 0px` // FIXME 123.5px wtf
+			}
+			orientationHandler = window.addEventListener('deviceorientation', _.debounce(handleOrientation, 200));
 
 			// add event listeners to cancel fullscreen on scroll, keyup
 			window.addEventListener('keyup', exitFullscreen, {once:true, passive: true})
 			window.addEventListener('scroll', exitFullscreen, {once:true, passive: true})
+			window.addEventListener('click', exitFullscreen, true);
 
 		}
 
-		function handleOrientation (event) {
-			const alpha = event.alpha; // lean left / right
-			if (alpha < 0) {
-				console.log('left');
-				img.style.transformOrigin = "0% 123.5px 0px"
-			}
-			else if (alpha > 0) {
-				console.log('right');
-				img.style.transformOrigin = "100% 123.5px 0px"
-			}
-//			else {
-//				img.style.transformOrigin = `${alpha/90*img.width}px 123.5px 0px`
-//			}
-		}
 
 		function exitFullscreen() {
+			window.removeEventListener('deviceorientation', orientationHandler);
 			// p above
 			transformed.forEach(element => {
 				element.style.transform = ``
@@ -89,10 +82,9 @@
 			});
 			transformed = [];
 
-				
 			isFullscreen = false;
 		}
-		
+
 	</script>
 </body>
 </html>
