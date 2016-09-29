@@ -2,7 +2,7 @@
 
 view this page on a phone: <https://gazs.github.io/lightboxie/>
 
-this is an toy to emulate the sort of mobile friendly lightbox effect
+this is an toy to emulate the sort of mobile friendly "tilt-to-explore" lightbox effect
 seen on facebook instant articles.
 
 when holding a phone in the default portrait orientation, tapping on a
