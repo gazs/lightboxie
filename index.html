@@ -35,8 +35,16 @@
 
 			// center image
 			img.style.transition = `0.2s all`;
-			img.style.transform = `scale(${windowHeight / imageBB.height})`;
-			img.style.transformOrigin = `50% ${img.offsetTop + img.height/2}px`;
+
+			let scale = windowHeight / imageBB.height;
+			let scaledImageHeight = scale * imageBB.height;
+
+			//let pushedTop = (imageBB.height / 2) * (scale - 1);
+			let pushedTop = (scaledImageHeight / 2 ) - (imageBB.height/2);
+			let translateY = ((imageBB.top - pushedTop) * -1 / scale);
+
+			console.log( scale, translateY);
+			img.style.transform = `scale(${scale}) translateY(${translateY}px)`;
 
 			transformed.push(img);
 
@@ -61,9 +69,9 @@
 			// listen to tilt
 			function handleOrientation (event) {
 				const gamma = event.gamma; // lean left / right
-				img.style.transformOrigin = `${(gamma+90) / 180 * 100}% 123.5px 0px` // FIXME 123.5px wtf
+				img.style.transformOrigin = `${(gamma+90) / 180 * 100}% 50% 0px`
 			}
-			orientationHandler = window.addEventListener('deviceorientation', _.debounce(handleOrientation, 200));
+			orientationHandler = window.addEventListener('deviceorientation', _.debounce(handleOrientation, 100));
 
 			// add event listeners to cancel fullscreen on scroll, keyup
 			window.addEventListener('keyup', exitFullscreen, {once:true, passive: true})
